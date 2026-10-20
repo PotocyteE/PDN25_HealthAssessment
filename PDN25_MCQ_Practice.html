@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PDN25 Health Assessment MCQ Practice</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+.container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+.question { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+.options label { display: block; margin: 5px 0; }
+button { padding: 10px 20px; margin: 10px 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+button:hover { background: #0056b3; }
+.result { font-weight: bold; margin-top: 20px; }
+select { padding: 8px; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>PDN25 Health Assessment – MCQ Practice</h1>
+<p>Select a lecture and answer the 20 questions. Answers are randomised in options.</p>
+<label for="lecture">Choose Lecture:</label>
+<select id="lecture" onchange="loadQuiz()">
+<option value="">-- Select --</option>
+<option value="L1">L1: Interview Skills & Health History</option>
+<option value="L2">L2: Physical Examination Skills</option>
+<option value="L3">L3: Nutritional & Anthropometric</option>
+<option value="L4_1">L4_1: Head & Neck</option>
+<option value="L4_2">L4_2: Eyes (Sensory)</option>
+<option value="L4_3">L4_3: ENT (Sensory)</option>
+<option value="L5">L5: Respiratory & Neurologic</option>
+<option value="L6">L6: Cardiovascular System</option>
+<option value="L7">L7: Abdomen</option>
+<option value="L8">L8: Mammary & Reproductive</option>
+<option value="L9">L9: Musculoskeletal System</option>
+</select>
+<div id="quiz"></div>
+<button onclick="submitQuiz()" id="submitBtn" style="display:none;">Submit Answers</button>
+<div id="result" class="result"></div>
+</div>
+
+<script>
+const quizzes = {
+  L1: [
+    {q: "The primary purpose of health history taking is to:", opts: ["Collect objective data only", "Gather subjective data about the client's health status", "Perform physical examination", "Order laboratory tests"], a: 1},
+    {q: "Which communication technique is most effective for encouraging a client to elaborate?", opts: ["Closed-ended questions", "Silence and active listening", "Leading questions", "Why questions"], a: 1},
+    {q: "PQRST is used for assessing:", opts: ["Pain", "Past medical history", "Family history", "Social history"], a: 0},
+    {q: "Which of the following is a component of health history?", opts: ["Inspection", "Chief complaint", "Percussion", "Auscultation"], a: 1},
+    {q: "Open-ended questions are preferred because they:", opts: ["Limit the client's response", "Allow the client to describe experiences in their own words", "Save time", "Focus only on yes/no answers"], a: 1},
+    {q: "Therapeutic communication includes all EXCEPT:", opts: ["Empathy", "Judgemental statements", "Active listening", "Clarification"], a: 1},
+    {q: "The review of systems is part of:", opts: ["Physical examination", "Health history", "Laboratory data", "Imaging"], a: 1},
+    {q: "Which is an example of a closed-ended question?", opts: ["How are you feeling today?", "Do you have chest pain?", "Tell me about your pain", "Describe your symptoms"], a: 1},
+    {q: "Cultural considerations in interview include:", opts: ["Ignoring language barriers", "Using professional interpreters when needed", "Assuming all clients understand medical terms", "Speaking louder to non-English speakers"], a: 1},
+    {q: "The chief complaint is best documented as:", opts: ["The nurse's diagnosis", "The client's own words", "The doctor's note", "Laboratory findings"], a: 1},
+    {q: "Which technique helps build rapport?", opts: ["Standing over the client", "Maintaining eye contact and sitting at eye level", "Rushing through questions", "Using medical jargon"], a: 1},
+    {q: "Past medical history includes:", opts: ["Current medications only", "Previous illnesses, surgeries, allergies", "Only family diseases", "Social habits only"], a: 1},
+    {q: "A barrier to effective communication is:", opts: ["Active listening", "Medical jargon without explanation", "Empathy", "Silence"], a: 1},
+    {q: "The purpose of the health history is to:", opts: ["Replace physical examination", "Provide a complete picture of the client's health", "Focus only on current illness", "Document vital signs"], a: 1},
+    {q: "Which question is most appropriate for assessing pain?", opts: ["You don't have much pain, do you?", "Describe the pain in your own words", "Is the pain bad?", "Pain is normal after surgery, right?"], a: 1},
+    {q: "Family history is important because it helps identify:", opts: ["Only infectious diseases", "Genetic risk factors", "Current lifestyle only", "Medication allergies"], a: 1},
+    {q: "Documentation of health history should be:", opts: ["Subjective and incomplete", "Objective, accurate and complete", "Based on assumptions", "Only abnormal findings"], a: 1},
+    {q: "Which is a non-therapeutic technique?", opts: ["Clarifying", "Giving advice prematurely", "Reflecting", "Summarising"], a: 1},
+    {q: "The interview should begin with:", opts: ["Sensitive questions about sexual history", "Introduction and explanation of purpose", "Physical examination", "Laboratory results"], a: 1},
+    {q: "Active listening involves:", opts: ["Interrupting to correct the client", "Paying full attention and responding appropriately", "Thinking about the next question only", "Writing notes without looking at the client"], a: 1}
+  ],
+  L3: [
+    {q: "BMI is calculated as:", opts: ["Weight (lb) / height (in)", "Weight (kg) / height (m)²", "Height / weight", "Waist / hip"], a: 1},
+    {q: "According to WHO, a BMI of 27 is classified as:", opts: ["Normal", "Overweight", "Obese", "Underweight"], a: 1},
+    {q: "Waist-to-hip ratio is used to assess:", opts: ["Muscle mass", "Body fat distribution and health risk", "Bone density", "Hydration status"], a: 1},
+    {q: "Android obesity is indicated by waist-to-hip ratio:", opts: ["≥1.0 in men or ≥0.8 in women", "<0.8 in women", "Equal in both", "Only in athletes"], a: 0},
+    {q: "BMI should NOT be applied to clients with:", opts: ["Normal weight", "Oedema or athletes", "Short stature", "All adults"], a: 1},
+    {q: "Normal BMI range is:", opts: ["<18.5", "18.5–24.9", "25–29.9", "≥30"], a: 1},
+    {q: "Waist circumference is measured:", opts: ["At the largest part of the buttocks", "Just above the iliac crests", "At the umbilicus only", "Around the thighs"], a: 1},
+    {q: "A BMI ≥40 indicates:", opts: ["Normal weight", "Overweight", "Obesity", "Extreme obesity"], a: 3},
+    {q: "Gynoid obesity refers to fat distribution mainly in:", opts: ["Upper body", "Hips and thighs", "Abdomen only", "Arms"], a: 1},
+    {q: "The formula for waist-to-hip ratio is:", opts: ["Hip / waist", "Waist / hip", "Weight / height", "BMI × 2"], a: 1},
+    {q: "Underweight is defined as BMI:", opts: ["<18.5", "18.5–24.9", "25–29.9", "≥30"], a: 0},
+    {q: "Obesity is BMI:", opts: ["25–29.9", "30–39.9", "≥40", "18.5–24.9"], a: 1},
+    {q: "High waist-to-hip ratio increases risk of:", opts: ["Only joint problems", "Cardiovascular disease and metabolic disorders", "Only skin conditions", "Hearing loss"], a: 1},
+    {q: "Hip circumference is measured at:", opts: ["Just above iliac crests", "Largest circumference of the buttocks", "Umbilicus", "Mid-thigh"], a: 1},
+    {q: "BMI is a marker of:", opts: ["Only muscle mass", "Optimal weight for height and indicator of obesity/undernutrition", "Bone strength", "Lung capacity"], a: 1},
+    {q: "Extreme obesity is BMI:", opts: ["≥30", "≥35", "≥40", "≥25"], a: 2},
+    {q: "Which measurement assesses body fat distribution?", opts: ["BMI only", "Waist-to-hip ratio", "Arm span", "Height alone"], a: 1},
+    {q: "A client with BMI 32 is:", opts: ["Normal", "Overweight", "Obese", "Underweight"], a: 2},
+    {q: "WHO classification applies to:", opts: ["Children only", "Adults", "Athletes only", "Clients with oedema"], a: 1},
+    {q: "The unit of BMI is:", opts: ["kg/m", "kg/m²", "lb/in²", "cm/kg"], a: 1}
+  ]
+  // Additional lectures can be added similarly. For full practice, expand with more questions based on notes.
+};
+
+function loadQuiz() {
+  const lecture = document.getElementById('lecture').value;
+  const quizDiv = document.getElementById('quiz');
+  const submitBtn = document.getElementById('submitBtn');
+  const resultDiv = document.getElementById('result');
+  resultDiv.innerHTML = '';
+  quizDiv.innerHTML = '';
+  if (!lecture || !quizzes[lecture]) {
+    submitBtn.style.display = 'none';
+    return;
+  }
+  const questions = quizzes[lecture];
+  questions.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'question';
+    div.innerHTML = `<p><strong>${idx+1}. ${item.q}</strong></p>`;
+    item.opts.forEach((opt, oidx) => {
+      div.innerHTML += `<label><input type="radio" name="q${idx}" value="${oidx}"> ${opt}</label>`;
+    });
+    quizDiv.appendChild(div);
+  });
+  submitBtn.style.display = 'block';
+}
+
+function submitQuiz() {
+  const lecture = document.getElementById('lecture').value;
+  if (!lecture || !quizzes[lecture]) return;
+  const questions = quizzes[lecture];
+  let score = 0;
+  questions.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+    if (selected && parseInt(selected.value) === item.a) score++;
+  });
+  document.getElementById('result').innerHTML = `You scored ${score} out of ${questions.length}. Review the lecture notes for incorrect answers.`;
+}
+</script>
+</body>
+</html>
