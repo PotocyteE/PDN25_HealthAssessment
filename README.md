@@ -7,7 +7,10 @@ Interactive and structured practice questions for the Health Assessment examinat
 - **[Start MCQ Practice Quiz →](PDN25_MCQ_Practice.html)**  
   Interactive multiple-choice questions (open in browser).
 
-- **[Short Question Practice →](PDN25_Health_Assessment_SQ_Practice.md)**  
+- **[Start Short Question Practice →](PDN25_SQ_Practice.html)**  
+  Interactive short-answer practice with text boxes and keyword checking.
+
+- **[Short Question Model Answers (Markdown) →](PDN25_Health_Assessment_SQ_Practice.md)**  
   Detailed short-answer questions with model answers for high-probability topics.
 
 ## Files Included
@@ -15,10 +18,13 @@ Interactive and structured practice questions for the Health Assessment examinat
 1. **PDN25_Health_Assessment_SQ_Practice.md**  
    Detailed Short Question practice with model answers for all high-probability areas you identified (BMI, thyroid, confrontation test, whispered voice, CVS PQRST/JVP/carotid, abdomen tests, MSK tests, etc.).
 
-2. **PDN25_MCQ_Practice.html**  
+2. **PDN25_SQ_Practice.html**  
+   Interactive Short Question practice. Type your answers in text boxes and click “Check Answer” for keyword matching + model answer reveal.
+
+3. **PDN25_MCQ_Practice.html**  
    Interactive web-based MCQ quiz. Open in any browser. Currently includes full sets for L1 and L3; expand the `quizzes` object in the script with the remaining lectures using the content from the MD file.
 
-3. **PDN25_Full_MCQ_Sets.md**  
+4. **PDN25_Full_MCQ_Sets.md**  
    Structured outlines and sample questions for all lectures (L1–L9) with guidance on balanced answer distribution.
 
 ## How to Use on GitHub
