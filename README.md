@@ -2,6 +2,14 @@
 
 Interactive and structured practice questions for the Health Assessment examination.
 
+## Quick Links
+
+- **[Start MCQ Practice Quiz →](PDN25_MCQ_Practice.html)**  
+  Interactive multiple-choice questions (open in browser).
+
+- **[Short Question Practice →](PDN25_Health_Assessment_SQ_Practice.md)**  
+  Detailed short-answer questions with model answers for high-probability topics.
+
 ## Files Included
 
 1. **PDN25_Health_Assessment_SQ_Practice.md**  
@@ -19,7 +27,9 @@ Interactive and structured practice questions for the Health Assessment examinat
 2. Upload all files from this folder.
 3. For the HTML quiz to work as a website:
    - Go to repository Settings → Pages → Deploy from branch → main → / (root).
-   - The site will be available at `https://yourusername.github.io/pdn25-health-assessment-practice/PDN25_MCQ_Practice.html`.
+   - The site will be available at `https://yourusername.github.io/pdn25-health-assessment-practice/`.
+   - Click the **Start MCQ Practice Quiz** link above, or go directly to:  
+     `https://yourusername.github.io/pdn25-health-assessment-practice/PDN25_MCQ_Practice.html`
 
 ## Recommendations
 
