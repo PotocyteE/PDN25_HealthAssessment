@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PDN25 Health Assessment – Short Question Practice</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; line-height: 1.5; }
+.container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+h1 { color: #007bff; }
+.question-block { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 6px; background: #fafafa; }
+.question-block h3 { margin-top: 0; color: #333; }
+textarea { width: 100%; min-height: 120px; padding: 10px; font-family: inherit; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+button { padding: 8px 16px; margin: 8px 5px 0 0; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+button:hover { background: #0056b3; }
+.model-answer { display: none; margin-top: 12px; padding: 12px; background: #e8f5e9; border-left: 4px solid #4caf50; border-radius: 4px; white-space: pre-wrap; }
+.feedback { margin-top: 8px; font-weight: bold; }
+.correct { color: #2e7d32; }
+.partial { color: #ef6c00; }
+.incorrect { color: #c62828; }
+select { padding: 8px; margin-bottom: 20px; font-size: 15px; }
+#score { font-size: 1.2em; margin-top: 20px; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>PDN25 Health Assessment – Short Question Practice</h1>
+<p>Type your answer in the box, then click <strong>Check Answer</strong> to see the model answer and a basic keyword match.</p>
+
+<label for="lectureFilter">Filter by Lecture:</label>
+<select id="lectureFilter" onchange="filterQuestions()">
+<option value="all">All Lectures</option>
+<option value="L3">L3: Nutritional & Anthropometric</option>
+<option value="L4_1">L4_1: Thyroid</option>
+<option value="L4_2">L4_2: Confrontation Test</option>
+<option value="L4_3">L4_3: Whispered Voice</option>
+<option value="L5">L5: Respiratory Objective Data</option>
+<option value="L6">L6: Cardiovascular</option>
+<option value="L7">L7: Abdomen</option>
+<option value="L9">L9: Musculoskeletal</option>
+</select>
+
+<div id="questions"></div>
+<div id="score"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    id: "L3-1",
+    lecture: "L3",
+    title: "L3: BMI Calculation (WHO Standard)",
+    question: "A client weighs 75 kg and is 1.70 m tall. Calculate the BMI and classify according to WHO standards.",
+    keywords: ["25.95", "26", "overweight", "18.5", "24.9", "25", "29.9", "30", "40", "who"],
+    model: `BMI = weight (kg) / [height (m)]² = 75 / (1.70)² = 75 / 2.89 ≈ 25.95 kg/m²
+Classification: Overweight (25 – 29.9)
+
+WHO Adult Classification:
+- < 18.5: Underweight
+- 18.5 – 24.9: Normal weight
+- 25 – 29.9: Overweight
+- 30 – 39.9: Obesity
+- ≥ 40: Extreme obesity
+
+Note: Do not apply to clients with oedema or athletes.`
+  },
+  {
+    id: "L3-2",
+    lecture: "L3",
+    title: "L3: Waist-to-Hip Ratio",
+    question: "Explain how to measure waist and hip circumference and interpret the ratio. What does a high ratio indicate?",
+    keywords: ["waist", "hip", "iliac", "buttocks", "android", "1.0", "0.8", "gynoid", "risk"],
+    model: `Waist circumference: measured just above the iliac crests.
+Hip circumference: measured at the largest circumference of the buttocks.
+Ratio = Waist / Hip
+
+Android obesity (upper body fat): ≥ 1.0 in men or ≥ 0.8 in women → higher health risk.
+Gynoid obesity: fat mainly in hips and thighs.`
+  },
+  {
+    id: "L4_1",
+    lecture: "L4_1",
+    title: "L4_1: Inspect and Palpate the Neck for Thyroid Gland",
+    question: "Describe the steps for inspection and palpation of the thyroid gland (posterior and anterior approaches). What are normal vs abnormal findings?",
+    keywords: ["swallow", "posterior", "anterior", "trachea", "sternomastoid", "isthmus", "bruit", "enlarged", "nodules"],
+    model: `Inspection:
+- Position standing lamp to shine tangentially across the neck.
+- Tilt head back to stretch skin.
+- Inspect as person swallows (thyroid moves up then falls; may need sip of water).
+
+Posterior Approach:
+- Move behind person.
+- Ask to sit up straight, bend head slightly forward and to the right.
+- Use left hand to push trachea slightly to the right.
+- Curve right fingers between trachea and sternomastoid muscle.
+- Ask person to take sip of water; thyroid moves up under fingers.
+- Reverse for left side.
+- Normal: often cannot palpate normal adult thyroid.
+
+Anterior Approach:
+- Stand facing person.
+- Identify isthmus by placing thumb 3 cm below thyroid cartilage.
+- Use right thumb to displace trachea slightly.
+- Hook left thumb and fingers around sternomastoid; feel for lobe enlargement as person swallows.
+- If enlarged, auscultate for bruit.`
+  },
+  {
+    id: "L4_2",
+    lecture: "L4_2",
+    title: "L4_2: Testing Visual Fields (Confrontation Test)",
+    question: "Describe the procedure for the Confrontation test and normal findings.",
+    keywords: ["peripheral", "cover", "wiggling", "finger", "50", "90", "70", "60", "temporal", "nasal"],
+    model: `Screens for loss of peripheral vision. Compares person's peripheral vision with examiner's.
+
+Steps:
+1. Position yourself at eye level about 2 feet away.
+2. Ask client to cover one eye; you cover the opposite eye.
+3. Hold a wiggling finger as target midline between you and client.
+4. Slowly advance the wiggling finger in from the periphery in several directions.
+5. Ask client to say “now” when target is first seen.
+6. For temporal direction, start finger somewhat behind the person.
+
+Normal results: about 50° upward, 90° temporally, 70° inferiorly, 60° nasally.`
+  },
+  {
+    id: "L4_3",
+    lecture: "L4_3",
+    title: "L4_3: Whispered Voice Test",
+    question: "Describe the procedure and how to interpret results.",
+    keywords: ["arm", "2 feet", "tragus", "whisper", "3", "numbers", "letters", "4 of 6", "high-tone"],
+    model: `1. Stand arm’s length (2 feet) behind the person.
+2. Test one ear at a time while masking hearing in the other ear (push tragus in and out).
+3. Move head to 1 to 2 feet from the person’s ear.
+4. Exhale fully and whisper slowly a set of 3 random numbers and letters (e.g., “5, B, 6”).
+5. If response incorrect, repeat with different combination of 3.
+6. Passing score: correct repetition of 4 of a possible 6 numbers/letters.
+7. Assess other ear with another set.
+
+Normal: client repeats each number/letter correctly.
+Abnormal: unable to repeat 3 of the 6 items (detects high-tone loss).`
+  },
+  {
+    id: "L5",
+    lecture: "L5",
+    title: "L5: Respiratory – Inspection, Palpation, Percussion, Auscultation",
+    question: "Summarise normal findings for each technique in respiratory assessment.",
+    keywords: ["vesicular", "resonance", "symmetric", "fremitus", "tripod", "crackles", "wheezes", "dullness"],
+    model: `Inspection: Normal relaxed posture, regular even respiration, skin colour consistent with genetic background. Abnormal: tripod position, nasal flaring, cyanosis/pallor, barrel chest.
+
+Palpation: Confirm expansion, tactile fremitus – normal symmetric.
+
+Percussion: Resonance over lung fields (low-pitched, clear, hollow). Abnormal: asymmetry, dullness (consolidation), hyperresonance (emphysema/pneumothorax).
+
+Auscultation: Normal vesicular breath sounds. Abnormal: crackles, wheezes, etc.`
+  },
+  {
+    id: "L6-1",
+    lecture: "L6",
+    title: "L6: Health History Taking on CVS (PQRST)",
+    question: "What questions would you ask using PQRST for a client with chest pain?",
+    keywords: ["provocation", "palliation", "quality", "region", "radiation", "severity", "timing", "0-10"],
+    model: `P (Provocation/Palliation): What brings the pain? What makes it worse/better?
+Q (Quality): How is the nature? What does it feel like?
+R (Region/Radiation): Where is the pain? Does it radiate?
+S (Severity): How severe is the pain? Rate 0-10.
+T (Timing): When does the pain occur? Onset, duration, frequency.
+
+Also assess dyspnoea, orthopnoea, cough, fatigue, cyanosis/pallor, oedema, nocturia, past/family cardiac history, risk factors.`
+  },
+  {
+    id: "L6-2",
+    lecture: "L6",
+    title: "L6: Carotid Artery – Palpation and Auscultation",
+    question: "Describe technique and normal findings for carotid artery palpation and auscultation.",
+    keywords: ["one at a time", "bruit", "bell", "2+", "carotid sinus", "angle of jaw", "midcervical"],
+    model: `Palpation:
+- Palpate each carotid artery medial to sternomastoid gently.
+- Avoid excessive pressure on carotid sinus.
+- Palpate only one at a time.
+- Normal: smooth contour with brisk upstroke, strength 2+ (moderate), regular, bilateral equal.
+
+Auscultation:
+- Auscultate for bruit (especially older people or CVD symptoms).
+- Ask client to take a breath, exhale, and hold briefly.
+- Lightly apply bell of stethoscope at 3 levels: angle of jaw, midcervical, base of neck.
+- Normal: no bruit.
+- Abnormal: bruit = turbulence, marker for atherosclerotic disease.`
+  },
+  {
+    id: "L6-3",
+    lecture: "L6",
+    title: "L6: Jugular Vein Inspection and Estimate JVP",
+    question: "Describe inspection and measurement of JVP.",
+    keywords: ["30-45", "sternal angle", "3 cm", "right side", "internal jugular", "angle of louis"],
+    model: `Inspection:
+- Stand on person’s right side.
+- Position client supine at 30–45° angle.
+- Remove pillow; head in same plane as trunk.
+- Turn head slightly away from examined side.
+- Direct strong light tangentially onto neck.
+- Normal: pulsations of internal jugular veins visible.
+
+Estimate JVP:
+1. Use angle of Louis (sternal angle) as reference.
+2. Hold vertical ruler on sternal angle.
+3. Align straight edge to level of pulsation.
+4. Read level of intersection.
+- Normal: < 3 cm above sternal angle.
+- Abnormal: > 3 cm at 45° (heart failure, etc.).`
+  },
+  {
+    id: "L7-1",
+    lecture: "L7",
+    title: "L7: Umbilicus (Cullen Sign)",
+    question: "Describe normal vs abnormal findings for the umbilicus, including Cullen sign.",
+    keywords: ["midline", "inverted", "cullen", "bluish", "bleeding", "hernia"],
+    model: `Normal: midline and inverted, no discolouration, inflammation or hernia.
+Abnormal: everted (ascites/mass), deeply sunken (obesity), enlarged and everted (umbilical hernia), bluish periumbilical colour → intraperitoneal bleeding (Cullen sign).`
+  },
+  {
+    id: "L7-2",
+    lecture: "L7",
+    title: "L7: Costovertebral Angle Tenderness",
+    question: "How to test for costovertebral angle tenderness and interpret findings.",
+    keywords: ["thud", "sharp pain", "kidney", "pyelonephritis", "renal"],
+    model: `Normal: client feels a thud but no pain.
+Abnormal: sharp pain = inflammation of kidney or perinephric area (e.g., pyelonephritis, renal calculi).`
+  },
+  {
+    id: "L7-3",
+    lecture: "L7",
+    title: "L7: Fluid Wave Test",
+    question: "Describe the Fluid Wave test method and interpretation.",
+    keywords: ["ascites", "ulnar", "midline", "flank", "tap", "strike"],
+    model: `Differentiates ascites from gaseous distention.
+Method: Stand on client’s right side. Client places ulnar edge of hand firmly on midline abdomen. Place left hand on client’s right flank. With right hand, reach across and give client’s left flank a firm strike.
+If ascites present: feel distinct tap on left hand.
+If gas/adipose: no change.`
+  },
+  {
+    id: "L7-4",
+    lecture: "L7",
+    title: "L7: Shifting Dullness",
+    question: "Describe the method for Shifting Dullness.",
+    keywords: ["supine", "tympany", "dullness", "right side", "fluid", "usg"],
+    model: `Client supine: percuss midline (tympany), then down side until dullness (mark). Turn to right side; percuss upper side downward – expect tympany superior, dullness lower. Shifting level of dullness indicates fluid. (USG is definitive.)`
+  },
+  {
+    id: "L7-5",
+    lecture: "L7",
+    title: "L7: Palpation of Liver (Murphy’s Sign)",
+    question: "Describe liver palpation and Murphy’s sign.",
+    keywords: ["murphy", "inspiratory arrest", "cholecystitis", "costal margin", "ruq", "gallbladder"],
+    model: `Method: Left hand under back parallel to 11th/12th ribs, lift up. Right hand on RUQ, fingers parallel to midline. Push deeply down and under right costal margin. Client breathes slowly; with every exhalation move hand up 1–2 cm.
+Normal: often not palpable, or edge feels firm regular ridge, no pain.
+Abnormal: Murphy’s sign (inspiratory arrest) – in acute cholecystitis, descending liver pushes inflamed gallbladder onto hand → sharp pain, client stops inspiration midway.`
+  },
+  {
+    id: "L7-6",
+    lecture: "L7",
+    title: "L7: Rebound Tenderness",
+    question: "Describe rebound tenderness and its interpretation.",
+    keywords: ["rebound", "release", "peritoneal", "inflammation", "stabbing"],
+    model: `Assess when client reports pain. Push slowly and deeply then lift up quickly.
+Normal: no pain on release.
+Abnormal: sharp stabbing pain on release → rebound tenderness (reliable sign of peritoneal inflammation).`
+  },
+  {
+    id: "L9-1",
+    lecture: "L9",
+    title: "L9: Wrists and Hands – Phalen Test and Tinel Sign",
+    question: "Describe both the Phalen test and Tinel sign for carpal tunnel syndrome.",
+    keywords: ["phalen", "tinel", "90", "60 seconds", "numbness", "tingling", "median nerve", "carpal tunnel"],
+    model: `Phalen Test: Hold both hands back to back while flexing wrists 90° for 60 seconds.
+Normal: no symptoms.
+Abnormal: numbness and burning → positive Phalen = carpal tunnel syndrome.
+
+Tinel Sign: Direct percussion of the median nerve location at the wrist.
+Normal: no symptoms.
+Abnormal: burning and tingling → positive Tinel = carpal tunnel syndrome.`
+  },
+  {
+    id: "L9-2",
+    lecture: "L9",
+    title: "L9: Knees – Bulge Sign & Ballottement",
+    question: "Describe the Bulge Sign and Ballottement test for knee effusion.",
+    keywords: ["bulge", "ballottement", "medial", "patella", "fluid", "effusion", "suprapatellar"],
+    model: `Bulge Sign (small amounts 4–8 ml): Firmly stroke up on medial aspect of knee 2–3 times to displace fluid. Tap lateral aspect and watch for fluid wave in hollow of medial side.
+Normal: none present.
+
+Ballottement Test (larger amounts): One hand compresses suprapatellar pouch; other hand pushes patella sharply against femur.
+Normal: no sound if fluid not present.`
+  },
+  {
+    id: "L9-3",
+    lecture: "L9",
+    title: "L9: Spine – Straight Leg Raising (Lasègue Test)",
+    question: "Describe the Straight Leg Raising / Lasègue test procedure and interpretation.",
+    keywords: ["lasegue", "sciatica", "dorsiflex", "herniated", "disc", "knee extended", "pain"],
+    model: `To confirm sciatica and herniated nucleus pulposus.
+Keep knee extended, raise affected leg just short of point of pain, then dorsiflex foot. Raise unaffected leg while other flat; inquire about involved side.
+Normal: no pain on raising leg.
+Abnormal: presents/worsens sciatic pain, resists elevation. Positive: increased pain on dorsiflexion of foot → strongly suggests herniated disc.`
+  },
+  {
+    id: "L9-4",
+    lecture: "L9",
+    title: "L9: Measure Leg Length Discrepancy",
+    question: "Describe true vs apparent leg length measurement.",
+    keywords: ["true", "apparent", "iliac crest", "medial malleolus", "umbilicus", "1 cm", "pelvic"],
+    model: `True leg length: From anterior iliac crest to medial malleolus (crossing medial side of knee). Normal: equal or within 1 cm.
+Apparent leg length: From umbilicus (nonfixed) to medial malleolus.
+If true lengths equal/within 1 cm but apparent unequal → pelvic obliquity or adduction/flexion deformity of hip.`
+  }
+];
+
+function renderQuestions(filter = "all") {
+  const container = document.getElementById("questions");
+  container.innerHTML = "";
+  const filtered = filter === "all" ? questions : questions.filter(q => q.lecture === filter);
+  filtered.forEach((q, idx) => {
+    const div = document.createElement("div");
+    div.className = "question-block";
+    div.id = "block-" + q.id;
+    div.innerHTML = `
+      <h3>${q.title}</h3>
+      <p>${q.question}</p>
+      <textarea id="answer-${q.id}" placeholder="Type your answer here..."></textarea>
+      <div>
+        <button onclick="checkAnswer('${q.id}')">Check Answer</button>
+        <button onclick="clearAnswer('${q.id}')" style="background:#6c757d;">Clear</button>
+      </div>
+      <div id="feedback-${q.id}" class="feedback"></div>
+      <div id="model-${q.id}" class="model-answer"></div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function checkAnswer(id) {
+  const q = questions.find(x => x.id === id);
+  const userAnswer = document.getElementById("answer-" + id).value.toLowerCase();
+  const modelDiv = document.getElementById("model-" + id);
+  const feedbackDiv = document.getElementById("feedback-" + id);
+
+  modelDiv.textContent = q.model;
+  modelDiv.style.display = "block";
+
+  let matched = 0;
+  q.keywords.forEach(kw => {
+    if (userAnswer.includes(kw.toLowerCase())) matched++;
+  });
+  const ratio = matched / q.keywords.length;
+  let msg = "";
+  let cls = "";
+  if (ratio >= 0.6) {
+    msg = `Good coverage (${matched}/${q.keywords.length} key points detected). Compare with model answer.`;
+    cls = "correct";
+  } else if (ratio >= 0.3) {
+    msg = `Partial (${matched}/${q.keywords.length} key points). Review the model answer carefully.`;
+    cls = "partial";
+  } else {
+    msg = `Limited match (${matched}/${q.keywords.length} key points). Study the model answer.`;
+    cls = "incorrect";
+  }
+  feedbackDiv.textContent = msg;
+  feedbackDiv.className = "feedback " + cls;
+}
+
+function clearAnswer(id) {
+  document.getElementById("answer-" + id).value = "";
+  document.getElementById("feedback-" + id).textContent = "";
+  document.getElementById("model-" + id).style.display = "none";
+}
+
+function filterQuestions() {
+  const filter = document.getElementById("lectureFilter").value;
+  renderQuestions(filter);
+}
+
+renderQuestions();
+</script>
+</body>
+</html>
