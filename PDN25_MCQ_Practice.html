@@ -7,11 +7,16 @@
 body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
 .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 .question { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
-.options label { display: block; margin: 5px 0; }
+.options label { display: block; margin: 6px 0; padding: 6px 8px; border-radius: 4px; }
+.options label:hover { background: #f0f0f0; }
 button { padding: 10px 20px; margin: 10px 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
 button:hover { background: #0056b3; }
 .result { font-weight: bold; margin-top: 20px; }
 select { padding: 8px; margin-bottom: 20px; }
+.correct-option { background: #d4edda; border-left: 4px solid #28a745; }
+.wrong-option { background: #f8d7da; border-left: 4px solid #dc3545; }
+.explanation { margin-top: 10px; padding: 10px; background: #e7f3ff; border-radius: 4px; font-size: 0.95em; }
+.q-result { font-weight: bold; margin-bottom: 8px; }
 </style>
 </head>
 <body>
@@ -41,50 +46,247 @@ select { padding: 8px; margin-bottom: 20px; }
 <script>
 const quizzes = {
   L1: [
-    {q: "The primary purpose of health history taking is to:", opts: ["Collect objective data only", "Gather subjective data about the client's health status", "Perform physical examination", "Order laboratory tests"], a: 1},
-    {q: "Which communication technique is most effective for encouraging a client to elaborate?", opts: ["Closed-ended questions", "Silence and active listening", "Leading questions", "Why questions"], a: 1},
-    {q: "PQRST is used for assessing:", opts: ["Pain", "Past medical history", "Family history", "Social history"], a: 0},
-    {q: "Which of the following is a component of health history?", opts: ["Inspection", "Chief complaint", "Percussion", "Auscultation"], a: 1},
-    {q: "Open-ended questions are preferred because they:", opts: ["Limit the client's response", "Allow the client to describe experiences in their own words", "Save time", "Focus only on yes/no answers"], a: 1},
-    {q: "Therapeutic communication includes all EXCEPT:", opts: ["Empathy", "Judgemental statements", "Active listening", "Clarification"], a: 1},
-    {q: "The review of systems is part of:", opts: ["Physical examination", "Health history", "Laboratory data", "Imaging"], a: 1},
-    {q: "Which is an example of a closed-ended question?", opts: ["How are you feeling today?", "Do you have chest pain?", "Tell me about your pain", "Describe your symptoms"], a: 1},
-    {q: "Cultural considerations in interview include:", opts: ["Ignoring language barriers", "Using professional interpreters when needed", "Assuming all clients understand medical terms", "Speaking louder to non-English speakers"], a: 1},
-    {q: "The chief complaint is best documented as:", opts: ["The nurse's diagnosis", "The client's own words", "The doctor's note", "Laboratory findings"], a: 1},
-    {q: "Which technique helps build rapport?", opts: ["Standing over the client", "Maintaining eye contact and sitting at eye level", "Rushing through questions", "Using medical jargon"], a: 1},
-    {q: "Past medical history includes:", opts: ["Current medications only", "Previous illnesses, surgeries, allergies", "Only family diseases", "Social habits only"], a: 1},
-    {q: "A barrier to effective communication is:", opts: ["Active listening", "Medical jargon without explanation", "Empathy", "Silence"], a: 1},
-    {q: "The purpose of the health history is to:", opts: ["Replace physical examination", "Provide a complete picture of the client's health", "Focus only on current illness", "Document vital signs"], a: 1},
-    {q: "Which question is most appropriate for assessing pain?", opts: ["You don't have much pain, do you?", "Describe the pain in your own words", "Is the pain bad?", "Pain is normal after surgery, right?"], a: 1},
-    {q: "Family history is important because it helps identify:", opts: ["Only infectious diseases", "Genetic risk factors", "Current lifestyle only", "Medication allergies"], a: 1},
-    {q: "Documentation of health history should be:", opts: ["Subjective and incomplete", "Objective, accurate and complete", "Based on assumptions", "Only abnormal findings"], a: 1},
-    {q: "Which is a non-therapeutic technique?", opts: ["Clarifying", "Giving advice prematurely", "Reflecting", "Summarising"], a: 1},
-    {q: "The interview should begin with:", opts: ["Sensitive questions about sexual history", "Introduction and explanation of purpose", "Physical examination", "Laboratory results"], a: 1},
-    {q: "Active listening involves:", opts: ["Interrupting to correct the client", "Paying full attention and responding appropriately", "Thinking about the next question only", "Writing notes without looking at the client"], a: 1}
+    {q: "The primary purpose of health history taking is to:", opts: ["Collect objective data only", "Gather subjective data about the client's health status", "Perform physical examination", "Order laboratory tests"], a: 1, explain: "Health history focuses on subjective data — what the client reports about their health."},
+    {q: "Which communication technique is most effective for encouraging a client to elaborate?", opts: ["Closed-ended questions", "Silence and active listening", "Leading questions", "Why questions"], a: 1, explain: "Silence and active listening give the client space to expand on their thoughts."},
+    {q: "PQRST is used for assessing:", opts: ["Pain", "Past medical history", "Family history", "Social history"], a: 0, explain: "PQRST is a mnemonic specifically for characterising pain (Provocation, Quality, Region, Severity, Timing)."},
+    {q: "Which of the following is a component of health history?", opts: ["Inspection", "Chief complaint", "Percussion", "Auscultation"], a: 1, explain: "Chief complaint is part of the health history. Inspection, percussion and auscultation are physical examination techniques."},
+    {q: "Open-ended questions are preferred because they:", opts: ["Limit the client's response", "Allow the client to describe experiences in their own words", "Save time", "Focus only on yes/no answers"], a: 1, explain: "Open-ended questions encourage detailed, narrative responses in the client’s own words."},
+    {q: "Therapeutic communication includes all EXCEPT:", opts: ["Empathy", "Judgemental statements", "Active listening", "Clarification"], a: 1, explain: "Judgemental statements are non-therapeutic and can damage rapport."},
+    {q: "The review of systems is part of:", opts: ["Physical examination", "Health history", "Laboratory data", "Imaging"], a: 1, explain: "Review of systems is a systematic questioning component within the health history."},
+    {q: "Which is an example of a closed-ended question?", opts: ["How are you feeling today?", "Do you have chest pain?", "Tell me about your pain", "Describe your symptoms"], a: 1, explain: "Closed-ended questions can be answered with yes/no or a short factual response."},
+    {q: "Cultural considerations in interview include:", opts: ["Ignoring language barriers", "Using professional interpreters when needed", "Assuming all clients understand medical terms", "Speaking louder to non-English speakers"], a: 1, explain: "Professional interpreters should be used when language barriers exist."},
+    {q: "The chief complaint is best documented as:", opts: ["The nurse's diagnosis", "The client's own words", "The doctor's note", "Laboratory findings"], a: 1, explain: "The chief complaint should be recorded in the client’s exact words."},
+    {q: "Which technique helps build rapport?", opts: ["Standing over the client", "Maintaining eye contact and sitting at eye level", "Rushing through questions", "Using medical jargon"], a: 1, explain: "Sitting at eye level and maintaining appropriate eye contact helps establish rapport."},
+    {q: "Past medical history includes:", opts: ["Current medications only", "Previous illnesses, surgeries, allergies", "Only family diseases", "Social habits only"], a: 1, explain: "Past medical history covers previous illnesses, surgeries, hospitalisations and allergies."},
+    {q: "A barrier to effective communication is:", opts: ["Active listening", "Medical jargon without explanation", "Empathy", "Silence"], a: 1, explain: "Unexplained medical jargon confuses clients and blocks effective communication."},
+    {q: "The purpose of the health history is to:", opts: ["Replace physical examination", "Provide a complete picture of the client's health", "Focus only on current illness", "Document vital signs"], a: 1, explain: "The health history aims to give a comprehensive understanding of the client’s overall health status."},
+    {q: "Which question is most appropriate for assessing pain?", opts: ["You don't have much pain, do you?", "Describe the pain in your own words", "Is the pain bad?", "Pain is normal after surgery, right?"], a: 1, explain: "Asking the client to describe the pain in their own words is open-ended and non-leading."},
+    {q: "Family history is important because it helps identify:", opts: ["Only infectious diseases", "Genetic risk factors", "Current lifestyle only", "Medication allergies"], a: 1, explain: "Family history helps identify genetic predispositions and familial disease patterns."},
+    {q: "Documentation of health history should be:", opts: ["Subjective and incomplete", "Objective, accurate and complete", "Based on assumptions", "Only abnormal findings"], a: 1, explain: "Documentation must be accurate, objective and complete."},
+    {q: "Which is a non-therapeutic technique?", opts: ["Clarifying", "Giving advice prematurely", "Reflecting", "Summarising"], a: 1, explain: "Giving advice too early can be non-therapeutic and may close down communication."},
+    {q: "The interview should begin with:", opts: ["Sensitive questions about sexual history", "Introduction and explanation of purpose", "Physical examination", "Laboratory results"], a: 1, explain: "Always start with introduction and explain the purpose of the interview."},
+    {q: "Active listening involves:", opts: ["Interrupting to correct the client", "Paying full attention and responding appropriately", "Thinking about the next question only", "Writing notes without looking at the client"], a: 1, explain: "Active listening means giving full attention and responding in a way that shows understanding."}
   ],
   L3: [
-    {q: "BMI is calculated as:", opts: ["Weight (lb) / height (in)", "Weight (kg) / height (m)²", "Height / weight", "Waist / hip"], a: 1},
-    {q: "According to WHO, a BMI of 27 is classified as:", opts: ["Normal", "Overweight", "Obese", "Underweight"], a: 1},
-    {q: "Waist-to-hip ratio is used to assess:", opts: ["Muscle mass", "Body fat distribution and health risk", "Bone density", "Hydration status"], a: 1},
-    {q: "Android obesity is indicated by waist-to-hip ratio:", opts: ["≥1.0 in men or ≥0.8 in women", "<0.8 in women", "Equal in both", "Only in athletes"], a: 0},
-    {q: "BMI should NOT be applied to clients with:", opts: ["Normal weight", "Oedema or athletes", "Short stature", "All adults"], a: 1},
-    {q: "Normal BMI range is:", opts: ["<18.5", "18.5–24.9", "25–29.9", "≥30"], a: 1},
-    {q: "Waist circumference is measured:", opts: ["At the largest part of the buttocks", "Just above the iliac crests", "At the umbilicus only", "Around the thighs"], a: 1},
-    {q: "A BMI ≥40 indicates:", opts: ["Normal weight", "Overweight", "Obesity", "Extreme obesity"], a: 3},
-    {q: "Gynoid obesity refers to fat distribution mainly in:", opts: ["Upper body", "Hips and thighs", "Abdomen only", "Arms"], a: 1},
-    {q: "The formula for waist-to-hip ratio is:", opts: ["Hip / waist", "Waist / hip", "Weight / height", "BMI × 2"], a: 1},
-    {q: "Underweight is defined as BMI:", opts: ["<18.5", "18.5–24.9", "25–29.9", "≥30"], a: 0},
-    {q: "Obesity is BMI:", opts: ["25–29.9", "30–39.9", "≥40", "18.5–24.9"], a: 1},
-    {q: "High waist-to-hip ratio increases risk of:", opts: ["Only joint problems", "Cardiovascular disease and metabolic disorders", "Only skin conditions", "Hearing loss"], a: 1},
-    {q: "Hip circumference is measured at:", opts: ["Just above iliac crests", "Largest circumference of the buttocks", "Umbilicus", "Mid-thigh"], a: 1},
-    {q: "BMI is a marker of:", opts: ["Only muscle mass", "Optimal weight for height and indicator of obesity/undernutrition", "Bone strength", "Lung capacity"], a: 1},
-    {q: "Extreme obesity is BMI:", opts: ["≥30", "≥35", "≥40", "≥25"], a: 2},
-    {q: "Which measurement assesses body fat distribution?", opts: ["BMI only", "Waist-to-hip ratio", "Arm span", "Height alone"], a: 1},
-    {q: "A client with BMI 32 is:", opts: ["Normal", "Overweight", "Obese", "Underweight"], a: 2},
-    {q: "WHO classification applies to:", opts: ["Children only", "Adults", "Athletes only", "Clients with oedema"], a: 1},
-    {q: "The unit of BMI is:", opts: ["kg/m", "kg/m²", "lb/in²", "cm/kg"], a: 1}
+    {q: "BMI is calculated as:", opts: ["Weight (lb) / height (in)", "Weight (kg) / height (m)²", "Height / weight", "Waist / hip"], a: 1, explain: "BMI = weight in kilograms divided by height in metres squared."},
+    {q: "According to WHO, a BMI of 27 is classified as:", opts: ["Normal", "Overweight", "Obese", "Underweight"], a: 1, explain: "WHO: 25–29.9 = Overweight. A BMI of 27 falls in this range."},
+    {q: "Waist-to-hip ratio is used to assess:", opts: ["Muscle mass", "Body fat distribution and health risk", "Bone density", "Hydration status"], a: 1, explain: "Waist-to-hip ratio indicates body fat distribution (android vs gynoid) and associated health risk."},
+    {q: "Android obesity is indicated by waist-to-hip ratio:", opts: ["≥1.0 in men or ≥0.8 in women", "<0.8 in women", "Equal in both", "Only in athletes"], a: 0, explain: "Android (upper body) obesity: waist-to-hip ≥1.0 in men or ≥0.8 in women."},
+    {q: "BMI should NOT be applied to clients with:", opts: ["Normal weight", "Oedema or athletes", "Short stature", "All adults"], a: 1, explain: "BMI is inaccurate in clients with oedema (fluid weight) or athletes (high muscle mass)."},
+    {q: "Normal BMI range is:", opts: ["<18.5", "18.5–24.9", "25–29.9", "≥30"], a: 1, explain: "WHO normal weight: 18.5–24.9."},
+    {q: "Waist circumference is measured:", opts: ["At the largest part of the buttocks", "Just above the iliac crests", "At the umbilicus only", "Around the thighs"], a: 1, explain: "Waist circumference is measured just above the iliac crests."},
+    {q: "A BMI ≥40 indicates:", opts: ["Normal weight", "Overweight", "Obesity", "Extreme obesity"], a: 3, explain: "WHO: BMI ≥40 = Extreme obesity."},
+    {q: "Gynoid obesity refers to fat distribution mainly in:", opts: ["Upper body", "Hips and thighs", "Abdomen only", "Arms"], a: 1, explain: "Gynoid obesity is fat mainly distributed in the hips and thighs."},
+    {q: "The formula for waist-to-hip ratio is:", opts: ["Hip / waist", "Waist / hip", "Weight / height", "BMI × 2"], a: 1, explain: "Waist-to-hip ratio = waist circumference ÷ hip circumference."},
+    {q: "Underweight is defined as BMI:", opts: ["<18.5", "18.5–24.9", "25–29.9", "≥30"], a: 0, explain: "WHO: BMI <18.5 = Underweight."},
+    {q: "Obesity is BMI:", opts: ["25–29.9", "30–39.9", "≥40", "18.5–24.9"], a: 1, explain: "WHO: BMI 30–39.9 = Obesity."},
+    {q: "High waist-to-hip ratio increases risk of:", opts: ["Only joint problems", "Cardiovascular disease and metabolic disorders", "Only skin conditions", "Hearing loss"], a: 1, explain: "High waist-to-hip ratio (android pattern) is linked to higher cardiovascular and metabolic risk."},
+    {q: "Hip circumference is measured at:", opts: ["Just above iliac crests", "Largest circumference of the buttocks", "Umbilicus", "Mid-thigh"], a: 1, explain: "Hip circumference is measured at the largest circumference of the buttocks."},
+    {q: "BMI is a marker of:", opts: ["Only muscle mass", "Optimal weight for height and indicator of obesity/undernutrition", "Bone strength", "Lung capacity"], a: 1, explain: "BMI indicates optimal weight for height and screens for obesity or undernutrition."},
+    {q: "Extreme obesity is BMI:", opts: ["≥30", "≥35", "≥40", "≥25"], a: 2, explain: "WHO: BMI ≥40 = Extreme obesity."},
+    {q: "Which measurement assesses body fat distribution?", opts: ["BMI only", "Waist-to-hip ratio", "Arm span", "Height alone"], a: 1, explain: "Waist-to-hip ratio specifically assesses body fat distribution."},
+    {q: "A client with BMI 32 is:", opts: ["Normal", "Overweight", "Obese", "Underweight"], a: 2, explain: "BMI 32 falls in the 30–39.9 range = Obesity."},
+    {q: "WHO classification applies to:", opts: ["Children only", "Adults", "Athletes only", "Clients with oedema"], a: 1, explain: "WHO BMI classification is intended for adults."},
+    {q: "The unit of BMI is:", opts: ["kg/m", "kg/m²", "lb/in²", "cm/kg"], a: 1, explain: "BMI is expressed in kg/m²."}
+  ],
+  L2: [
+    {q: "The correct sequence of physical examination techniques for the abdomen is:", opts: ["Inspection, percussion, palpation, auscultation", "Inspection, auscultation, percussion, palpation", "Palpation, inspection, auscultation, percussion", "Auscultation, inspection, palpation, percussion"], a: 1, explain: "For the abdomen, auscultation is performed before percussion and palpation to avoid altering bowel sounds."},
+    {q: "The diaphragm of the stethoscope is best for:", opts: ["Low-pitched sounds", "High-pitched sounds", "Heart murmurs only", "Bowel sounds only"], a: 1, explain: "The diaphragm is used for high-pitched sounds such as breath sounds and normal heart sounds."},
+    {q: "Palpation that uses the fingertips to detect texture and swelling is:", opts: ["Deep palpation", "Light palpation", "Bimanual palpation", "Ballottement"], a: 1, explain: "Light palpation (about 1 cm) assesses surface characteristics such as texture, temperature and swelling."},
+    {q: "Percussion note that is loud, low-pitched and hollow is called:", opts: ["Dullness", "Resonance", "Tympany", "Flatness"], a: 1, explain: "Resonance is the normal percussion note over healthy lung tissue."},
+    {q: "Which technique is used first in most body systems?", opts: ["Palpation", "Percussion", "Auscultation", "Inspection"], a: 3, explain: "Inspection is always performed first."},
+    {q: "The bell of the stethoscope is best for:", opts: ["High-pitched sounds", "Low-pitched sounds", "Breath sounds", "Bowel sounds"], a: 1, explain: "The bell is used for low-pitched sounds such as heart murmurs or bruits."},
+    {q: "Deep palpation is used to assess:", opts: ["Skin temperature", "Surface lesions", "Organs and masses", "Hair texture"], a: 2, explain: "Deep palpation (4–5 cm) is used to assess deeper organs and masses."},
+    {q: "A flat percussion note is heard over:", opts: ["Lung tissue", "Stomach", "Thigh muscle", "Normal abdomen"], a: 2, explain: "Flatness is heard over solid tissue such as muscle or bone."},
+    {q: "Tympany is normally heard over:", opts: ["Liver", "Lung", "Air-filled structures such as the stomach", "Bone"], a: 2, explain: "Tympany is a drum-like sound heard over air-filled structures."},
+    {q: "Which statement about hand hygiene is correct?", opts: ["Wash hands only after the examination", "Wash hands before and after patient contact", "Gloves replace hand washing", "Hand washing is optional if using alcohol gel"], a: 1, explain: "Hand hygiene is required before and after every patient contact."},
+    {q: "The purpose of draping during examination is to:", opts: ["Keep the examiner warm", "Maintain client privacy and dignity", "Improve lighting", "Reduce infection risk only"], a: 1, explain: "Draping preserves the client’s privacy and dignity."},
+    {q: "When using the stethoscope, the examiner should:", opts: ["Place it over clothing", "Warm the chest piece before use", "Hold it loosely", "Use only the bell"], a: 1, explain: "Warm the diaphragm or bell to avoid startling the client."},
+    {q: "Indirect percussion involves:", opts: ["Striking the body directly with the fist", "Using the plexor finger to strike the pleximeter finger", "Listening with a stethoscope", "Palpating with both hands"], a: 1, explain: "Indirect percussion uses the middle finger of one hand to strike the middle finger of the other hand placed on the body."},
+    {q: "Which finding is obtained by inspection?", opts: ["Tenderness", "Resonance", "Skin colour and lesions", "Heart sounds"], a: 2, explain: "Inspection uses vision to assess colour, symmetry, lesions and general appearance."},
+    {q: "The recommended room temperature for examination is:", opts: ["Cool", "Warm and comfortable", "Very hot", "Irrelevant"], a: 1, explain: "A warm, comfortable room helps the client relax and prevents shivering."},
+    {q: "Which is an example of light palpation?", opts: ["Pressing 4–5 cm deep", "Using one hand to feel surface texture", "Compressing the suprapatellar pouch", "Striking the costovertebral angle"], a: 1, explain: "Light palpation assesses surface characteristics with gentle pressure."},
+    {q: "Dullness on percussion is expected over:", opts: ["Normal lung", "Air-filled bowel", "Solid organs such as the liver", "Empty stomach"], a: 2, explain: "Dullness is heard over solid organs or fluid-filled structures."},
+    {q: "The examiner’s nails should be:", opts: ["Long and painted", "Short and clean", "Covered with gloves at all times", "Irrelevant"], a: 1, explain: "Short, clean nails prevent injury to the client and reduce infection risk."},
+    {q: "Which technique requires a quiet environment?", opts: ["Inspection", "Palpation", "Percussion", "Auscultation"], a: 3, explain: "Auscultation requires a quiet room so that soft sounds can be heard."},
+    {q: "The correct order of examination for most systems (except abdomen) is:", opts: ["Inspection → Palpation → Percussion → Auscultation", "Auscultation → Inspection → Palpation → Percussion", "Palpation → Inspection → Auscultation → Percussion", "Percussion → Inspection → Auscultation → Palpation"], a: 0, explain: "Standard order is inspection, palpation, percussion, then auscultation (abdomen is the exception)."}
+  ],
+  L4_1: [
+    {q: "The thyroid gland is located:", opts: ["Above the hyoid bone", "In the anterior neck, straddling the trachea", "Behind the sternum", "In the posterior triangle"], a: 1, explain: "The thyroid lies in the anterior neck, overlying the trachea below the cricoid cartilage."},
+    {q: "During thyroid inspection, the client is asked to:", opts: ["Hold the breath", "Swallow", "Cough", "Turn the head side to side only"], a: 1, explain: "Swallowing causes the thyroid to rise and then fall, making enlargement more visible."},
+    {q: "Normal adult thyroid is usually:", opts: ["Easily palpable", "Not palpable or only the isthmus is felt", "Always enlarged", "Tender on palpation"], a: 1, explain: "A normal adult thyroid is often not palpable; the isthmus may be felt in a long, thin neck."},
+    {q: "In the posterior approach to thyroid palpation, the examiner stands:", opts: ["Facing the client", "Behind the client", "To the left only", "Seated"], a: 1, explain: "The posterior approach is performed from behind the client."},
+    {q: "A bruit over the thyroid suggests:", opts: ["Normal finding", "Hyperthyroidism or increased vascularity", "Hypothyroidism", "Lymph node enlargement"], a: 1, explain: "A soft, pulsatile bruit indicates increased blood flow, often seen in hyperthyroidism."},
+    {q: "The isthmus of the thyroid is located:", opts: ["Lateral to the sternomastoid", "Over the tracheal rings below the cricoid", "Above the hyoid", "In the supraclavicular fossa"], a: 1, explain: "The isthmus crosses the trachea just below the cricoid cartilage."},
+    {q: "Which lymph nodes are palpated in the head and neck assessment?", opts: ["Only cervical", "Preauricular, postauricular, occipital, tonsillar, submandibular, submental, superficial cervical, deep cervical, posterior cervical, supraclavicular", "Only axillary", "Only inguinal"], a: 1, explain: "A complete head and neck examination includes all regional lymph node groups."},
+    {q: "Tender, mobile lymph nodes usually indicate:", opts: ["Malignancy", "Acute infection", "Chronic fibrosis", "Normal finding"], a: 1, explain: "Tender, mobile nodes are more consistent with infection; hard, fixed nodes raise concern for malignancy."},
+    {q: "The trachea should be:", opts: ["Deviated to one side", "Midline", "Visible only on swallowing", "Pulsatile"], a: 1, explain: "The trachea is normally midline."},
+    {q: "To relax the right sternomastoid during posterior thyroid palpation, the client’s head is tilted:", opts: ["Backward", "Slightly forward and to the right", "To the left", "Straight"], a: 1, explain: "Slight forward and rightward tilt relaxes the right sternomastoid muscle."},
+    {q: "An enlarged thyroid is called:", opts: ["Lymphadenopathy", "Goitre", "Cyst", "Nodule only"], a: 1, explain: "Diffuse enlargement of the thyroid is termed a goitre."},
+    {q: "Supraclavicular lymph nodes that are hard and fixed may suggest:", opts: ["Viral infection", "Possible malignancy", "Normal finding", "Allergic reaction"], a: 1, explain: "Hard, fixed supraclavicular nodes can indicate malignancy."},
+    {q: "The anterior approach to thyroid palpation uses the:", opts: ["Fingertips from behind", "Thumbs to displace the trachea", "Stethoscope only", "Percussion"], a: 1, explain: "In the anterior approach the examiner uses the thumbs to displace the trachea and feel the lobes."},
+    {q: "Normal lymph nodes are:", opts: ["Hard and fixed", "Soft, mobile and non-tender", "Always visible", "Tender and enlarged"], a: 1, explain: "Normal nodes are usually not palpable; if felt they are soft, mobile and non-tender."},
+    {q: "Lighting for neck inspection should be:", opts: ["Direct overhead only", "Tangential to highlight contours", "Dim", "From behind the client"], a: 1, explain: "Tangential lighting helps reveal subtle swelling or asymmetry."},
+    {q: "The cricoid cartilage is a landmark for:", opts: ["The isthmus of the thyroid", "The hyoid bone", "The clavicle", "The mandible"], a: 0, explain: "The thyroid isthmus lies just below the cricoid cartilage."},
+    {q: "Which finding requires further investigation?", opts: ["Non-palpable thyroid", "Single hard nodule", "Symmetric neck", "Mobile soft nodes"], a: 1, explain: "A solitary hard nodule warrants further evaluation."},
+    {q: "Palpation of the thyroid should be:", opts: ["Forceful", "Gentle", "Done only with the client standing", "Performed after percussion"], a: 1, explain: "Thyroid palpation is performed gently to avoid discomfort."},
+    {q: "The posterior cervical lymph nodes are located:", opts: ["In front of the sternomastoid", "Behind the sternomastoid muscle", "Above the clavicle only", "Under the jaw"], a: 1, explain: "Posterior cervical nodes lie along the posterior border of the sternomastoid."},
+    {q: "If the thyroid is enlarged, the next step is to:", opts: ["Ignore it", "Auscultate for a bruit", "Percuss the neck", "Order immediate surgery"], a: 1, explain: "An enlarged thyroid should be auscultated for a bruit."}
+  ],
+  L4_2: [
+    {q: "The confrontation test assesses:", opts: ["Visual acuity", "Peripheral visual fields", "Colour vision", "Pupil reaction"], a: 1, explain: "The confrontation test screens for loss of peripheral vision by comparing the client’s fields with the examiner’s."},
+    {q: "Normal temporal visual field is approximately:", opts: ["50°", "60°", "70°", "90°"], a: 3, explain: "Normal visual fields are about 50° upward, 90° temporally, 70° inferiorly and 60° nasally."},
+    {q: "During the confrontation test the examiner and client should be:", opts: ["1 foot apart", "About 2 feet apart at eye level", "Sitting side by side", "One standing, one lying"], a: 1, explain: "Position yourself at eye level approximately 2 feet from the client."},
+    {q: "The client covers one eye and the examiner covers:", opts: ["The same eye", "The opposite eye", "Both eyes", "Neither eye"], a: 1, explain: "The examiner covers the eye opposite to the client’s covered eye so corresponding fields are tested."},
+    {q: "The target used in the confrontation test is usually:", opts: ["A penlight", "A wiggling finger", "An eye chart", "A coloured card"], a: 1, explain: "A wiggling finger is advanced from the periphery as the target."},
+    {q: "Loss of peripheral vision may indicate:", opts: ["Only refractive error", "Glaucoma or neurological disease", "Conjunctivitis", "Cataract only"], a: 1, explain: "Peripheral field loss can occur with glaucoma, retinal disease or stroke."},
+    {q: "Visual acuity is tested with:", opts: ["Confrontation test", "Snellen chart", "Cover-uncover test", "Red reflex"], a: 1, explain: "The Snellen chart is the standard tool for distance visual acuity."},
+    {q: "The red reflex is examined with:", opts: ["Ophthalmoscope", "Stethoscope", "Tuning fork", "Reflex hammer"], a: 0, explain: "The red reflex is assessed using an ophthalmoscope."},
+    {q: "Pupils that are equal, round and react to light are documented as:", opts: ["PERRLA", "APGAR", "GCS", "BMI"], a: 0, explain: "PERRLA = Pupils Equal, Round, Reactive to Light and Accommodation."},
+    {q: "Accommodation is tested by:", opts: ["Shining light in the eye", "Asking the client to look at a near then distant object", "Covering one eye", "Checking colour vision"], a: 1, explain: "Accommodation involves convergence and pupillary constriction when focusing on a near object."},
+    {q: "The optic disc is examined during:", opts: ["Confrontation testing", "Fundoscopy", "Visual acuity testing", "External eye inspection"], a: 1, explain: "Fundoscopy (ophthalmoscopy) allows visualisation of the optic disc and retina."},
+    {q: "Ptosis refers to:", opts: ["Drooping of the eyelid", "Double vision", "Involuntary eye movement", "Unequal pupils"], a: 0, explain: "Ptosis is drooping of the upper eyelid."},
+    {q: "Nystagmus is:", opts: ["Drooping eyelid", "Involuntary rhythmic oscillation of the eyes", "Unequal pupil size", "Loss of red reflex"], a: 1, explain: "Nystagmus is involuntary, rhythmic oscillation of the eyes."},
+    {q: "The cover-uncover test is used to detect:", opts: ["Visual field defects", "Strabismus (ocular misalignment)", "Cataract", "Glaucoma"], a: 1, explain: "The cover-uncover test screens for strabismus."},
+    {q: "Normal pupil size in bright light is approximately:", opts: ["1–2 mm", "2–4 mm", "6–8 mm", "10 mm"], a: 1, explain: "Pupils normally constrict to about 2–4 mm in bright light."},
+    {q: "Consensual light reflex means:", opts: ["Both pupils constrict when light is shone in one eye", "Only the illuminated pupil constricts", "Pupils dilate to light", "No reaction occurs"], a: 0, explain: "Consensual reflex: both pupils constrict when light is directed into one eye."},
+    {q: "The macula is responsible for:", opts: ["Peripheral vision", "Central sharp vision", "Colour blindness only", "Night vision only"], a: 1, explain: "The macula provides central, high-acuity vision."},
+    {q: "Which cranial nerve controls most extra-ocular movements?", opts: ["CN II", "CN III", "CN V", "CN VII"], a: 1, explain: "CN III (oculomotor) innervates most extra-ocular muscles."},
+    {q: "A client who cannot see the target at the same time as the examiner has:", opts: ["Normal fields", "A visual field defect", "Only refractive error", "Colour blindness"], a: 1, explain: "If the client sees the target later than the examiner, a field defect is present."},
+    {q: "The confrontation test is especially useful for screening:", opts: ["Young children only", "Older adults for glaucoma", "Contact lens wearers", "Clients with conjunctivitis"], a: 1, explain: "It is a useful screen for peripheral field loss, including glaucoma in older adults."}
+  ],
+  L4_3: [
+    {q: "The whispered voice test screens for:", opts: ["Low-tone hearing loss", "High-tone hearing loss", "Middle ear infection", "Balance disorders"], a: 1, explain: "The whispered voice test is sensitive to high-frequency hearing loss."},
+    {q: "During the whispered voice test the examiner stands:", opts: ["In front of the client", "Arm’s length (about 2 feet) behind the client", "Beside the client", "Across the room"], a: 1, explain: "Stand approximately 2 feet behind the client."},
+    {q: "To mask the non-test ear the examiner:", opts: ["Covers it with the hand only", "Pushes the tragus in and out of the auditory meatus", "Uses an earplug", "Asks the client to close the ear"], a: 1, explain: "Gently pushing the tragus in and out masks the non-test ear."},
+    {q: "A passing score on the whispered voice test is:", opts: ["Correct repetition of 2 of 6 items", "Correct repetition of 4 of 6 items", "Correct repetition of all 6 items", "Any response"], a: 1, explain: "Passing requires correct repetition of at least 4 out of 6 numbers/letters."},
+    {q: "The Rinne test compares:", opts: ["Air conduction with bone conduction", "Left ear with right ear only", "High tones with low tones", "Speech with pure tones"], a: 0, explain: "Rinne test compares air conduction (AC) with bone conduction (BC)."},
+    {q: "In a normal Rinne test:", opts: ["BC > AC", "AC > BC", "AC = BC", "No sound is heard"], a: 1, explain: "Normally air conduction is better than bone conduction (AC > BC)."},
+    {q: "The Weber test is performed by placing the tuning fork on:", opts: ["The mastoid process", "The midline of the forehead or vertex", "The external auditory canal", "The tragus"], a: 1, explain: "The Weber test places the vibrating tuning fork on the midline of the skull."},
+    {q: "Lateralisation of sound to one ear in the Weber test may indicate:", opts: ["Normal hearing", "Conductive loss in that ear or sensorineural loss in the opposite ear", "Only middle ear infection", "Normal finding always"], a: 1, explain: "Sound lateralises to the side of conductive loss or away from the side of sensorineural loss."},
+    {q: "The otoscope is used to examine:", opts: ["The external auditory canal and tympanic membrane", "The nasal septum only", "The oral cavity", "The larynx"], a: 0, explain: "Otoscopy visualises the external canal and tympanic membrane."},
+    {q: "A normal tympanic membrane appears:", opts: ["Red and bulging", "Pearly grey and translucent", "Blue", "Opaque white"], a: 1, explain: "A healthy tympanic membrane is pearly grey, translucent and slightly concave."},
+    {q: "The cone of light is normally seen in the:", opts: ["Anterior-inferior quadrant", "Posterior-superior quadrant", "Centre of the membrane", "Superior only"], a: 0, explain: "The cone of light is normally visible in the anterior-inferior quadrant."},
+    {q: "Which cranial nerve is tested by the whispered voice test?", opts: ["CN V", "CN VII", "CN VIII", "CN X"], a: 2, explain: "CN VIII (vestibulocochlear) carries hearing."},
+    {q: "Nasal patency is tested by:", opts: ["Asking the client to sniff while occluding one nostril", "Using a tuning fork", "Palpating the sinuses only", "Inspecting the throat"], a: 0, explain: "Occlude one nostril and ask the client to sniff to assess patency of the other."},
+    {q: "Transillumination of the sinuses is used to detect:", opts: ["Hearing loss", "Fluid or opacity in the sinuses", "Nasal polyps only", "Deviated septum"], a: 1, explain: "Transillumination can suggest sinus fluid or thickening when light transmission is reduced."},
+    {q: "The gag reflex tests cranial nerves:", opts: ["IX and X", "V and VII", "VIII and IX", "X and XI"], a: 0, explain: "The gag reflex is mediated by CN IX (sensory) and CN X (motor)."},
+    {q: "Tonsils that are visible and touch the uvula are graded:", opts: ["1+", "2+", "3+", "4+"], a: 2, explain: "Tonsil grading: 1+ visible, 2+ halfway to uvula, 3+ touching uvula, 4+ touching each other."},
+    {q: "A deviated nasal septum may cause:", opts: ["Only cosmetic change", "Unilateral nasal obstruction", "Hearing loss", "Toothache"], a: 1, explain: "Significant septal deviation can obstruct one nasal passage."},
+    {q: "The whispered voice test uses:", opts: ["A tuning fork", "Random combinations of numbers and letters", "Pure tones", "Speech at normal volume"], a: 1, explain: "The examiner whispers sets of three random numbers and letters."},
+    {q: "Abnormal whispered voice test suggests:", opts: ["Conductive loss only", "High-tone sensorineural loss", "Middle ear effusion only", "Normal ageing"], a: 1, explain: "Failure to repeat items correctly suggests high-frequency hearing loss."},
+    {q: "Before otoscopy in an adult the pinna is pulled:", opts: ["Down and back", "Up and back", "Forward", "Not moved"], a: 1, explain: "In adults the pinna is pulled upward and backward to straighten the canal."}
+  ],
+  L5: [
+    {q: "Normal breath sounds heard over most of the lung fields are:", opts: ["Bronchial", "Vesicular", "Bronchovesicular", "Tracheal"], a: 1, explain: "Vesicular sounds are soft, low-pitched and heard over most peripheral lung fields."},
+    {q: "Tactile fremitus is assessed by:", opts: ["Percussion", "Palpation while the client says “ninety-nine”", "Auscultation", "Inspection only"], a: 1, explain: "Tactile fremitus is the vibration felt on the chest wall when the client speaks."},
+    {q: "Increased tactile fremitus suggests:", opts: ["Pneumothorax", "Consolidation (e.g. pneumonia)", "Emphysema", "Pleural effusion"], a: 1, explain: "Solid lung transmits vibration better, so fremitus increases with consolidation."},
+    {q: "Hyperresonance on percussion is associated with:", opts: ["Pneumonia", "Emphysema or pneumothorax", "Pleural effusion", "Atelectasis"], a: 1, explain: "Hyperresonance occurs when there is excess air in the lung or pleural space."},
+    {q: "Dullness on percussion over the lung may indicate:", opts: ["Normal finding", "Consolidation or pleural effusion", "Pneumothorax", "Emphysema"], a: 1, explain: "Fluid or solid tissue produces a dull percussion note."},
+    {q: "Crackles (rales) are best heard:", opts: ["During inspiration", "Only during expiration", "Only with the bell", "After coughing always disappears"], a: 0, explain: "Crackles are discontinuous sounds usually heard during inspiration."},
+    {q: "Wheezes are:", opts: ["Discontinuous popping sounds", "Continuous musical sounds", "Only heard over the trachea", "Normal in all clients"], a: 1, explain: "Wheezes are continuous, high-pitched musical sounds from narrowed airways."},
+    {q: "The tripod position is seen in clients with:", opts: ["Mild upper respiratory infection", "Severe respiratory distress", "Normal breathing", "Only cardiac disease"], a: 1, explain: "Clients in respiratory distress often lean forward with arms braced (tripod position)."},
+    {q: "Barrel chest is associated with:", opts: ["Pneumonia", "Chronic emphysema", "Pleural effusion", "Acute asthma only"], a: 1, explain: "Barrel chest (increased AP diameter) is classic in emphysema."},
+    {q: "Normal respiratory rate in adults is:", opts: ["8–10 breaths/min", "12–20 breaths/min", "24–30 breaths/min", "30–40 breaths/min"], a: 1, explain: "Normal adult respiratory rate is 12–20 breaths per minute."},
+    {q: "Bronchial breath sounds heard over peripheral lung fields suggest:", opts: ["Normal finding", "Consolidation", "Emphysema", "Pneumothorax"], a: 1, explain: "Bronchial sounds over the periphery indicate that air-filled lung has been replaced by solid tissue."},
+    {q: "The correct sequence for respiratory examination is:", opts: ["Auscultation, inspection, palpation, percussion", "Inspection, palpation, percussion, auscultation", "Palpation, auscultation, inspection, percussion", "Percussion, inspection, auscultation, palpation"], a: 1, explain: "Standard order: inspection → palpation → percussion → auscultation."},
+    {q: "Clubbing of the fingers may indicate:", opts: ["Acute bronchitis", "Chronic hypoxia (e.g. lung cancer, bronchiectasis)", "Only asthma", "Normal finding"], a: 1, explain: "Digital clubbing is associated with chronic hypoxaemia."},
+    {q: "Pleural friction rub is caused by:", opts: ["Airway narrowing", "Inflamed pleural surfaces rubbing together", "Fluid in alveoli", "Normal breathing"], a: 1, explain: "A pleural friction rub is a grating sound from inflamed pleura."},
+    {q: "Symmetric chest expansion is assessed by:", opts: ["Inspection only", "Placing hands on the posterolateral chest and asking the client to inhale", "Percussion", "Auscultation"], a: 1, explain: "Palpation of chest expansion checks for symmetry of movement."},
+    {q: "Decreased breath sounds may occur with:", opts: ["Pneumonia only", "Pleural effusion, pneumothorax or emphysema", "Only consolidation", "Normal quiet breathing"], a: 1, explain: "Air or fluid in the pleural space, or hyperinflation, reduces breath sound intensity."},
+    {q: "The anteroposterior to transverse diameter ratio is normally:", opts: ["1:1", "1:2", "2:1", "1:3"], a: 1, explain: "Normal AP:transverse ratio is approximately 1:2; 1:1 suggests barrel chest."},
+    {q: "Stridor is a:", opts: ["Low-pitched snoring sound", "High-pitched inspiratory sound from upper airway obstruction", "Normal breath sound", "Only expiratory wheeze"], a: 1, explain: "Stridor indicates upper airway obstruction and is a high-pitched inspiratory sound."},
+    {q: "Egophony is tested by asking the client to say:", opts: ["“Ninety-nine”", "“Eee”", "“Ahh”", "Nothing"], a: 1, explain: "Egophony: “eee” sounds like “aaa” over consolidated lung."},
+    {q: "Cyanosis is best observed in:", opts: ["The palms only", "Lips, nail beds and mucous membranes", "The scalp", "The abdomen"], a: 1, explain: "Central cyanosis is most evident in the lips, oral mucosa and nail beds."}
+  ],
+  L6: [
+    {q: "PQRST is used to assess:", opts: ["Only location of pain", "Characteristics of chest pain", "Heart sounds", "Blood pressure"], a: 1, explain: "PQRST systematically characterises pain: Provocation, Quality, Region, Severity, Timing."},
+    {q: "Carotid arteries should be palpated:", opts: ["Both at the same time", "One at a time", "Only on the left", "With heavy pressure"], a: 1, explain: "Palpate only one carotid at a time to avoid compromising cerebral blood flow."},
+    {q: "A carotid bruit suggests:", opts: ["Normal finding", "Turbulent flow from atherosclerosis", "Heart failure only", "Venous obstruction"], a: 1, explain: "A bruit indicates turbulent arterial flow, often from atherosclerotic narrowing."},
+    {q: "Normal jugular venous pressure is:", opts: [">5 cm above the sternal angle", "<3 cm above the sternal angle", "Always visible at 90°", "Measured only in the left neck"], a: 1, explain: "JVP is normally less than 3 cm above the sternal angle."},
+    {q: "The client is positioned at what angle for JVP assessment?", opts: ["Flat", "30–45°", "90° upright", "Trendelenburg"], a: 1, explain: "Elevate the head of the bed to 30–45° so the top of the venous column is visible."},
+    {q: "The point of maximal impulse (PMI) is normally located at:", opts: ["2nd intercostal space right sternal border", "5th intercostal space mid-clavicular line", "4th intercostal space left sternal border", "Epigastrium"], a: 1, explain: "The apical impulse is normally at the 5th ICS, mid-clavicular line."},
+    {q: "S1 is best heard at the:", opts: ["Base of the heart", "Apex of the heart", "Aortic area only", "Pulmonic area only"], a: 1, explain: "S1 (mitral and tricuspid closure) is loudest at the apex."},
+    {q: "S2 is best heard at the:", opts: ["Apex", "Base of the heart", "Epigastrium", "Left mid-axillary line"], a: 1, explain: "S2 (aortic and pulmonic closure) is loudest at the base."},
+    {q: "A grade 3/6 murmur is:", opts: ["Very faint", "Moderately loud", "Loud with a thrill", "Heard without a stethoscope"], a: 1, explain: "Grade 3 is moderately loud; grade 4 has a palpable thrill."},
+    {q: "The bell of the stethoscope is preferred for:", opts: ["High-pitched sounds", "Low-pitched sounds such as mitral stenosis murmur", "Breath sounds", "Bowel sounds"], a: 1, explain: "The bell detects low-pitched sounds better."},
+    {q: "Peripheral pulses are graded on a scale of:", opts: ["0–2", "0–3", "0–4", "1–5"], a: 2, explain: "Pulse amplitude is graded 0 (absent) to 4+ (bounding); 2+ is normal."},
+    {q: "Pitting oedema that disappears in 10–15 seconds is graded:", opts: ["1+", "2+", "3+", "4+"], a: 1, explain: "2+ pitting oedema rebounds in 10–15 seconds."},
+    {q: "The abdominojugular (hepatojugular) test is positive when:", opts: ["JVP falls with abdominal pressure", "JVP rises and stays elevated", "No change occurs", "The client coughs"], a: 1, explain: "Sustained rise in JVP with abdominal pressure suggests right heart dysfunction."},
+    {q: "Clubbing and cyanosis of the fingers may indicate:", opts: ["Only local infection", "Chronic hypoxaemia or congenital heart disease", "Normal ageing", "Only venous disease"], a: 1, explain: "Digital clubbing and cyanosis can reflect chronic hypoxaemia."},
+    {q: "The aortic area for auscultation is at the:", opts: ["2nd ICS right sternal border", "2nd ICS left sternal border", "5th ICS mid-clavicular line", "4th ICS left sternal border"], a: 0, explain: "Aortic area: 2nd intercostal space, right sternal border."},
+    {q: "Which sound is normal in children and young adults but may indicate heart failure in older adults?", opts: ["S1", "S2", "S3", "S4"], a: 2, explain: "An S3 can be normal in youth but is often pathological in older adults."},
+    {q: "Capillary refill time longer than 2–3 seconds suggests:", opts: ["Normal perfusion", "Poor peripheral perfusion", "Only arterial disease", "Venous insufficiency only"], a: 1, explain: "Delayed capillary refill indicates reduced peripheral perfusion."},
+    {q: "The pulmonic area is located at the:", opts: ["2nd ICS right sternal border", "2nd ICS left sternal border", "5th ICS mid-clavicular line", "Lower left sternal border"], a: 1, explain: "Pulmonic area: 2nd intercostal space, left sternal border."},
+    {q: "A lift or heave at the left sternal border may indicate:", opts: ["Normal finding", "Right ventricular hypertrophy", "Aortic stenosis only", "Mitral regurgitation only"], a: 1, explain: "A sustained lift at the left sternal border suggests right ventricular enlargement."},
+    {q: "When auscultating the carotids for bruits the client should:", opts: ["Breathe normally", "Hold the breath briefly after exhalation", "Cough", "Swallow"], a: 1, explain: "Brief breath-holding after exhalation reduces tracheal noise that can mask a bruit."}
+  ],
+  L7: [
+    {q: "Cullen’s sign is:", opts: ["Bluish discolouration around the umbilicus", "Yellowing of the sclera", "Redness over the costovertebral angle", "Pallor of the abdomen"], a: 0, explain: "Cullen’s sign (periumbilical ecchymosis) suggests intraperitoneal bleeding."},
+    {q: "Murphy’s sign is positive in:", opts: ["Appendicitis", "Acute cholecystitis", "Pancreatitis", "Renal colic"], a: 1, explain: "Inspiratory arrest during RUQ palpation (Murphy’s sign) indicates acute cholecystitis."},
+    {q: "Rebound tenderness suggests:", opts: ["Muscle strain", "Peritoneal inflammation", "Normal finding", "Only gas"], a: 1, explain: "Pain on sudden release of pressure indicates peritoneal irritation."},
+    {q: "The fluid wave test is used to detect:", opts: ["Ascites", "Hepatomegaly", "Splenomegaly", "Aortic aneurysm"], a: 0, explain: "A positive fluid wave indicates free fluid (ascites) in the peritoneal cavity."},
+    {q: "Shifting dullness is a sign of:", opts: ["Gaseous distension", "Ascites", "Solid mass", "Normal bowel"], a: 1, explain: "Shifting dullness occurs when free fluid moves with change in position."},
+    {q: "Costovertebral angle tenderness suggests:", opts: ["Liver disease", "Kidney inflammation (e.g. pyelonephritis)", "Appendicitis", "Cholecystitis"], a: 1, explain: "Sharp pain on percussion of the CVA indicates renal or perinephric inflammation."},
+    {q: "Normal bowel sounds occur:", opts: ["Every 5–10 seconds", "5–30 times per minute", "Continuously without pause", "Only after meals"], a: 1, explain: "Normal bowel sounds are heard 5–30 times per minute."},
+    {q: "Absent bowel sounds must be confirmed by listening for:", opts: ["30 seconds", "1 minute", "5 minutes", "10 seconds"], a: 2, explain: "Listen for a full 5 minutes before declaring bowel sounds absent."},
+    {q: "Tympany is the predominant percussion note over the:", opts: ["Liver", "Abdomen (gas-filled bowel)", "Spleen", "Full bladder"], a: 1, explain: "Gas-filled bowel produces tympany."},
+    {q: "The liver edge is normally:", opts: ["Always palpable 4 cm below the costal margin", "Often not palpable or felt as a firm, smooth ridge", "Hard and nodular", "Tender"], a: 1, explain: "A normal liver edge, if felt, is firm, regular and non-tender."},
+    {q: "Grey Turner’s sign is:", opts: ["Periumbilical bruising", "Flank bruising", "Jaundice", "Spider naevi"], a: 1, explain: "Grey Turner’s sign (flank ecchymosis) indicates retroperitoneal bleeding."},
+    {q: "The correct order of abdominal examination is:", opts: ["Inspection, palpation, percussion, auscultation", "Inspection, auscultation, percussion, palpation", "Auscultation, inspection, palpation, percussion", "Palpation first"], a: 1, explain: "Auscultate before percussion and palpation so bowel sounds are not altered."},
+    {q: "A scaphoid abdomen suggests:", opts: ["Ascites", "Malnutrition or cachexia", "Obesity", "Pregnancy"], a: 1, explain: "A sunken (scaphoid) abdomen is seen in malnutrition or cachexia."},
+    {q: "Guarding may be:", opts: ["Only voluntary", "Voluntary or involuntary", "Always pathological", "A normal finding in all clients"], a: 1, explain: "Guarding can be voluntary (muscle contraction) or involuntary (peritoneal irritation)."},
+    {q: "The spleen is normally:", opts: ["Easily palpable", "Not palpable", "Always tender", "Located in the right upper quadrant"], a: 1, explain: "A normal spleen is not palpable."},
+    {q: "Percussion of the liver span is normally:", opts: ["4–6 cm", "6–12 cm in the mid-clavicular line", "15–20 cm", "Variable with no normal range"], a: 1, explain: "Normal liver span is approximately 6–12 cm in the mid-clavicular line."},
+    {q: "A protuberant abdomen with everted umbilicus may indicate:", opts: ["Normal finding", "Ascites or large mass", "Scaphoid abdomen", "Only obesity"], a: 1, explain: "Ascites or a large intra-abdominal mass can produce a protuberant abdomen and everted umbilicus."},
+    {q: "Borborygmi are:", opts: ["Absent bowel sounds", "Loud, prolonged gurgling sounds", "High-pitched tinkling only", "Friction rubs"], a: 1, explain: "Borborygmi are loud, rumbling bowel sounds, often heard with hyperperistalsis."},
+    {q: "The bladder is percussed for:", opts: ["Tympany when full", "Dullness when distended", "Resonance", "Hyperresonance"], a: 1, explain: "A distended bladder produces dullness above the symphysis pubis."},
+    {q: "Which test differentiates ascites from gaseous distension?", opts: ["Murphy’s sign", "Fluid wave test", "Rebound tenderness", "Costovertebral angle tenderness"], a: 1, explain: "The fluid wave test specifically detects free intraperitoneal fluid."}
+  ],
+  L8: [
+    {q: "Breast self-examination is best performed:", opts: ["During menstruation", "5–7 days after the start of menstruation", "Any time", "Only by a clinician"], a: 1, explain: "Breasts are least tender and swollen in the week after menstruation begins."},
+    {q: "The most common site for breast cancer is the:", opts: ["Upper outer quadrant", "Lower inner quadrant", "Nipple only", "Lower outer quadrant"], a: 0, explain: "The upper outer quadrant (including the tail of Spence) is the most frequent site."},
+    {q: "Peau d’orange appearance of the breast suggests:", opts: ["Normal finding", "Lymphatic obstruction (possible malignancy)", "Only infection", "Pregnancy"], a: 1, explain: "Peau d’orange (orange-peel skin) results from lymphatic blockage."},
+    {q: "Nipple retraction that is a new finding may indicate:", opts: ["Normal ageing", "Underlying malignancy", "Only benign cyst", "Always hormonal"], a: 1, explain: "New nipple retraction or inversion warrants investigation."},
+    {q: "Axillary lymph nodes are palpated with the client’s arm:", opts: ["Raised above the head", "Relaxed at the side or slightly abducted", "Behind the back", "Extended forward"], a: 1, explain: "The arm should be relaxed so the nodes are accessible."},
+    {q: "Gynecomastia in males is:", opts: ["Always malignant", "Benign enlargement of male breast tissue", "Only seen in infants", "A sign of infection"], a: 1, explain: "Gynecomastia is benign proliferation of male glandular tissue."},
+    {q: "The tail of Spence is located in the:", opts: ["Lower inner quadrant", "Upper outer quadrant extending into the axilla", "Subareolar area only", "Inframammary fold"], a: 1, explain: "The tail of Spence is the extension of breast tissue into the axilla."},
+    {q: "Bloody nipple discharge requires:", opts: ["Reassurance only", "Further investigation", "Immediate mastectomy", "Antibiotics only"], a: 1, explain: "Bloody discharge needs evaluation to exclude malignancy."},
+    {q: "Breast examination includes inspection in which positions?", opts: ["Sitting only", "Arms at sides, arms overhead, hands on hips, leaning forward", "Supine only", "Standing only"], a: 1, explain: "Multiple positions help reveal asymmetry, dimpling or retraction."},
+    {q: "A fixed, hard, irregular breast mass is more suggestive of:", opts: ["Fibroadenoma", "Malignancy", "Cyst", "Normal tissue"], a: 1, explain: "Hard, irregular, fixed masses raise concern for carcinoma."},
+    {q: "The female reproductive assessment includes inspection of the:", opts: ["Only external genitalia", "External genitalia and, when indicated, speculum and bimanual examination", "Breasts only", "Abdomen only"], a: 1, explain: "A complete assessment may include external inspection plus speculum and bimanual examination."},
+    {q: "Testicular self-examination is recommended:", opts: ["Monthly", "Yearly", "Only after age 50", "Never"], a: 0, explain: "Monthly testicular self-examination is advised for early detection of changes."},
+    {q: "A painless testicular mass should be:", opts: ["Ignored", "Evaluated promptly", "Treated with antibiotics only", "Massaged"], a: 1, explain: "Any painless testicular mass requires urgent assessment to exclude malignancy."},
+    {q: "The left testis normally hangs:", opts: ["Higher than the right", "Lower than the right", "At the same level always", "Behind the right"], a: 1, explain: "The left testis usually hangs slightly lower than the right."},
+    {q: "Smegma is:", opts: ["A sign of infection", "Normal sebaceous secretion under the foreskin", "Always pathological", "Found only in females"], a: 1, explain: "Smegma is a normal whitish secretion that can accumulate under the foreskin."},
+    {q: "Which position is commonly used for female pelvic examination?", opts: ["Prone", "Lithotomy", "Sitting", "Standing"], a: 1, explain: "The lithotomy position is standard for pelvic examination."},
+    {q: "Dimpling of the breast skin may indicate:", opts: ["Normal finding", "Underlying malignancy with ligament involvement", "Only weight gain", "Infection only"], a: 1, explain: "Skin dimpling can result from tumour invasion of Cooper’s ligaments."},
+    {q: "The areola normally darkens during:", opts: ["Only menopause", "Pregnancy", "Childhood", "Exercise"], a: 1, explain: "Hormonal changes in pregnancy cause darkening of the areolae."},
+    {q: "Inguinal lymph nodes drain the:", opts: ["Arms", "Lower extremities and external genitalia", "Head and neck", "Breasts only"], a: 1, explain: "Inguinal nodes receive lymph from the legs, lower abdomen and external genitalia."},
+    {q: "A retracted nipple present since puberty is usually:", opts: ["Highly suspicious for cancer", "A normal variant", "Always due to infection", "Requires immediate biopsy"], a: 1, explain: "Long-standing nipple inversion from puberty is often a normal variant; new changes are concerning."}
+  ],
+  L9: [
+    {q: "The Phalen test is positive when:", opts: ["No symptoms occur", "Numbness and tingling develop within 60 seconds", "Pain occurs in the elbow", "The wrist cannot flex"], a: 1, explain: "Positive Phalen test (symptoms within 60 s of wrist flexion) suggests carpal tunnel syndrome."},
+    {q: "Tinel’s sign is elicited by:", opts: ["Flexing the wrists", "Percussing over the median nerve at the wrist", "Extending the elbow", "Abducting the shoulder"], a: 1, explain: "Tapping the median nerve at the wrist that produces tingling is a positive Tinel sign."},
+    {q: "The bulge sign detects:", opts: ["Large knee effusions", "Small amounts of fluid in the knee (4–8 mL)", "Ligament tears", "Meniscal injury only"], a: 1, explain: "The bulge sign is sensitive for small knee effusions."},
+    {q: "Ballottement of the patella tests for:", opts: ["Small effusions", "Larger knee effusions", "ACL tear", "Patellar fracture"], a: 1, explain: "Ballottement detects larger amounts of fluid in the knee joint."},
+    {q: "A positive straight-leg-raising (Lasègue) test suggests:", opts: ["Hip osteoarthritis", "Sciatica or herniated lumbar disc", "Knee effusion", "Ankle sprain"], a: 1, explain: "Pain radiating below the knee on straight-leg raise indicates nerve root irritation."},
+    {q: "True leg length is measured from:", opts: ["Umbilicus to medial malleolus", "Anterior superior iliac spine to medial malleolus", "Greater trochanter to lateral malleolus", "Knee to ankle"], a: 1, explain: "True leg length: ASIS to medial malleolus."},
+    {q: "Apparent leg length discrepancy with equal true lengths suggests:", opts: ["True bony shortening", "Pelvic obliquity or hip deformity", "Normal finding", "Only ankle problem"], a: 1, explain: "Unequal apparent length with equal true length points to pelvic tilt or hip contracture."},
+    {q: "Flexion of a joint means:", opts: ["Straightening", "Bending, decreasing the angle", "Moving away from midline", "Rotating"], a: 1, explain: "Flexion decreases the angle between two bones."},
+    {q: "Abduction is movement:", opts: ["Toward the midline", "Away from the midline", "In a circular motion", "Turning the palm up"], a: 1, explain: "Abduction moves a limb away from the midline of the body."},
+    {q: "The normal range of shoulder abduction is approximately:", opts: ["0–90°", "0–180°", "0–45°", "0–120°"], a: 1, explain: "Full shoulder abduction is about 180°."},
+    {q: "Crepitus in a joint indicates:", opts: ["Always fracture", "Irregular joint surfaces (e.g. osteoarthritis)", "Normal finding in all ages", "Only infection"], a: 1, explain: "Crepitus suggests roughened articular surfaces."},
+    {q: "Muscle strength is graded on a scale of:", opts: ["0–3", "0–5", "1–4", "0–10"], a: 1, explain: "Manual muscle testing uses a 0 (no contraction) to 5 (normal strength) scale."},
+    {q: "Grade 5 muscle strength means:", opts: ["No contraction", "Full range against gravity and full resistance", "Movement only with gravity eliminated", "Flicker of contraction"], a: 1, explain: "Grade 5 = normal strength: full ROM against gravity and maximal resistance."},
+    {q: "The Thomas test assesses for:", opts: ["Knee effusion", "Hip flexion contracture", "Ankle instability", "Shoulder impingement"], a: 1, explain: "The Thomas test detects fixed flexion deformity of the hip."},
+    {q: "Genu varum is:", opts: ["Knock-knees", "Bow-legs", "Hyperextension of the knee", "Patellar dislocation"], a: 1, explain: "Genu varum = bow-legs; genu valgum = knock-knees."},
+    {q: "Scoliosis is best detected by:", opts: ["Inspection of the spine from behind while the client bends forward", "Only X-ray", "Palpation of the knees", "Measuring leg length only"], a: 0, explain: "Forward bend test reveals rib hump or asymmetry in scoliosis."},
+    {q: "The drawer test assesses:", opts: ["Meniscus", "Cruciate ligament stability", "Collateral ligaments only", "Patellar tracking"], a: 1, explain: "Anterior/posterior drawer tests evaluate ACL/PCL integrity."},
+    {q: "Active range of motion is performed by:", opts: ["The examiner moving the joint", "The client moving the joint independently", "Passive stretching only", "Against resistance only"], a: 1, explain: "Active ROM is movement performed by the client; passive ROM is performed by the examiner."},
+    {q: "Heberden’s nodes are found at the:", opts: ["Proximal interphalangeal joints", "Distal interphalangeal joints", "Metacarpophalangeal joints", "Wrists"], a: 1, explain: "Heberden’s nodes affect the DIP joints; Bouchard’s nodes affect the PIP joints."},
+    {q: "A leg length difference greater than 1 cm is considered:", opts: ["Always normal", "Significant and may require further evaluation", "Only important in children", "Irrelevant"], a: 1, explain: "True leg length discrepancy >1 cm is considered significant."}
   ]
-  // Additional lectures can be added similarly. For full practice, expand with more questions based on notes.
 };
 
 function loadQuiz() {
@@ -99,13 +301,17 @@ function loadQuiz() {
     return;
   }
   const questions = quizzes[lecture];
+  const letters = ['A', 'B', 'C', 'D'];
   questions.forEach((item, idx) => {
     const div = document.createElement('div');
     div.className = 'question';
-    div.innerHTML = `<p><strong>${idx+1}. ${item.q}</strong></p>`;
+    div.id = 'qdiv-' + idx;
+    let html = `<p><strong>${idx+1}. ${item.q}</strong></p><div class="options">`;
     item.opts.forEach((opt, oidx) => {
-      div.innerHTML += `<label><input type="radio" name="q${idx}" value="${oidx}"> ${opt}</label>`;
+      html += `<label><input type="radio" name="q${idx}" value="${oidx}"> ${letters[oidx]}. ${opt}</label>`;
     });
+    html += `</div><div id="explain-${idx}" class="explanation" style="display:none;"></div>`;
+    div.innerHTML = html;
     quizDiv.appendChild(div);
   });
   submitBtn.style.display = 'block';
@@ -115,12 +321,43 @@ function submitQuiz() {
   const lecture = document.getElementById('lecture').value;
   if (!lecture || !quizzes[lecture]) return;
   const questions = quizzes[lecture];
+  const letters = ['A', 'B', 'C', 'D'];
   let score = 0;
+
   questions.forEach((item, idx) => {
     const selected = document.querySelector(`input[name="q${idx}"]:checked`);
-    if (selected && parseInt(selected.value) === item.a) score++;
+    const qdiv = document.getElementById('qdiv-' + idx);
+    const explainDiv = document.getElementById('explain-' + idx);
+    const labels = qdiv.querySelectorAll('label');
+
+    // Reset styles
+    labels.forEach(l => l.classList.remove('correct-option', 'wrong-option'));
+
+    const isCorrect = selected && parseInt(selected.value) === item.a;
+    if (isCorrect) score++;
+
+    // Highlight correct answer
+    labels[item.a].classList.add('correct-option');
+    if (selected && !isCorrect) {
+      labels[parseInt(selected.value)].classList.add('wrong-option');
+    }
+
+    // Build explanation
+    const correctLetter = letters[item.a];
+    const correctText = item.opts[item.a];
+    let exp = `<div class="q-result">${isCorrect ? '✓ Correct' : '✗ Incorrect'}</div>`;
+    exp += `<strong>Correct answer: ${correctLetter}. ${correctText}</strong><br>`;
+    if (item.explain) {
+      exp += item.explain;
+    } else {
+      exp += `This is the correct option based on the lecture content.`;
+    }
+    explainDiv.innerHTML = exp;
+    explainDiv.style.display = 'block';
   });
-  document.getElementById('result').innerHTML = `You scored ${score} out of ${questions.length}. Review the lecture notes for incorrect answers.`;
+
+  document.getElementById('result').innerHTML = `You scored <strong>${score}</strong> out of <strong>${questions.length}</strong>.`;
+  document.getElementById('submitBtn').style.display = 'none';
 }
 </script>
 </body>
